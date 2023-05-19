@@ -7,6 +7,8 @@ router.get('/' , UserControllers.getForm  )
 
 
 router.post('/result' , UserControllers.showResult )
+router.get('/getReverseName' , UserControllers.giveReverse)
+router.post('/user-register' , UserControllers.register)
 
 
 

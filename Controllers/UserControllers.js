@@ -1,5 +1,6 @@
 
 const path  = require('path')
+const UserSchema = require('../Schemas/UserSchema')
 
 
 exports.getForm  = (req,res) =>{
@@ -36,3 +37,27 @@ exports.showResult = (req,res) =>{
     }
 
 }
+
+
+exports.giveReverse= (req,res)=>{
+    const {name} =  req.query
+
+    var str  = name.split("").reverse().join("")
+    res.send(`Your Reverse String is :  ${str}`)
+
+}
+
+
+exports.register = (req,res)=>{
+    const {name , email , mobile , password} = req.body;
+
+    UserSchema.insertMany({name : name ,  email :  email ,  mobile : mobile ,  password :  password }).then((result)=>{
+console.log(result)
+res.send("USer Created")
+    }).catch((err)=>{
+        console.log(err)
+        res.send("Something went wrong")
+    })
+// 9549339982
+
+} 
