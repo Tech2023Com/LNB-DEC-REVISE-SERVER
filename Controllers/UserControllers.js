@@ -53,11 +53,25 @@ exports.register = (req,res)=>{
 
     UserSchema.insertMany({name : name ,  email :  email ,  mobile : mobile ,  password :  password }).then((result)=>{
 console.log(result)
-res.send("USer Created")
+res.status(200).send({status : 200 ,  message : "User Created Successfully"})
     }).catch((err)=>{
-        console.log(err)
-        res.send("Something went wrong")
+        console.log(err.name)
+        console.log(err.message)
+        if(err.name ==  "ValidationError")
+        {
+            res.status(400).send({ status : 400, message : `${err.message.split(":")[1].trim()} Cannot be Empty ): `})
+        }
+        else if(err.name == "MongoBulkWriteError")
+        {
+
+                let key  = err.message.split(":")[3].replace("{" , "").trim()
+                let value  = err.message.split(":")[4].replace("}" , "").trim()
+        res.status(400).send({ status :  400, message : `User , with this ${key} (${value}) already exists ):`})
+        }
+        else{
+
+            res.status(500).send({ status : 500, message : "Something Went Wrong" , err : err})
+        }
     })
-// 9549339982
 
 } 
