@@ -163,3 +163,106 @@ exports.getAllUsers = (req,res)=>{
 }
 
 
+
+exports.updateUserEmail = (req,res)=>{
+    const  {id , email} =  req.body;
+    UserSchema.updateOne({_id : id} , {$set : {email : email}}).then((result)=>{
+        console.log(result)
+        if(result.matchedCount == 1)
+        {
+            res.status(200).send({status : 200 ,  message : "Updated Successfully"})
+        }
+        else
+        {
+            res.status(404).send({status : 404 ,  message : "Not Updated"})
+
+        }
+
+    }).catch((err)=>{
+        res.status(500).send({status :  500 , message :  "Something Went Wrong"})
+
+    })
+
+}
+
+
+exports.changePassword = (req,res)=>{
+
+    const {id,  o_pass , n_pass , c_pass  }  = req.body;
+
+    if(n_pass !== c_pass)
+    {
+        res.status(400).send({  status : 400 , message : "Passowrd didn't Match"})
+    }
+    else
+    {
+
+    
+
+    UserSchema.find({_id : id}).then((result)=>{
+        
+        bcrypt.compare(o_pass ,result[0].password  , function(err , auth){
+            if(err)
+            {
+                res.status(500).send({status : 500  , message : "Something Went Wrong"})
+            }
+            else
+            {
+                    if(auth == false)
+                    {
+                        res.status(401).send({status  : 401 ,  message : "Old Password didn't macth"})
+                    }
+                    else
+                    {
+                        bcrypt.genSalt(10,  function(err , salt){
+                            if(err)
+                            {
+                                res.status(500).send({status : 500  , message : "Something Went Wrong"})
+                            }
+                            else
+                            {
+                                    bcrypt.hash(n_pass , salt , function(err , hash){
+                                        if(err)
+                            {
+                                res.status(500).send({status : 500  , message : "Something Went Wrong"})
+                            }
+                            else
+                            {
+                                UserSchema.updateOne({_id : id} , {$set : {password : hash}}).then((u_res)=>{
+                                    if(u_res.matchedCount == 1)
+                                    {
+                                        res.status(200).send({status : 200 ,  message : "Password Updated Successfully"})
+                                    }
+                                    else
+                                    {
+                                        res.status(404).send({status : 404 ,  message : "Password Not Updated"})
+                            
+                                    }
+                                }).catch((err)=>{
+                                    res.status(500).send({status : 500 , message : "Something Went Wrong"})
+                                })
+                            }
+                                    }  )
+                            }
+                        } )
+                    }
+            }
+            
+        })
+
+
+    }).catch((err)=>{
+        res.status(500).send({status : 500 , message : "Something Went Wrong"})
+
+
+    })
+}
+
+}
+
+
+
+
+
+
+

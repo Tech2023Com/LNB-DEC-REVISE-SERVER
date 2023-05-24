@@ -11,6 +11,8 @@ router.get('/getReverseName' , UserControllers.giveReverse)
 router.post('/user-register' , UserControllers.register)
 router.post('/user-login' , UserControllers.login)
 router.get('/get-all-users' , UserControllers.getAllUsers)
+router.post('/update-user-email' , UserControllers.updateUserEmail )
+router.post('/change-password' , UserControllers.changePassword )
 
 
 
