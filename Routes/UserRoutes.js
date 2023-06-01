@@ -16,7 +16,7 @@ router.post('/change-password' , UserControllers.changePassword )
 router.post('/delete-user' , UserControllers.deleteUser )
 router.post('/dummyLogin' , UserControllers.dummyLogin)
 router.post('/checkOE' , UserControllers.ValidateToken, UserControllers.checkOddEven)
-// router.post('/validateToken' , UserControllers.ValidateToken)
+// router.post('/validateToken' , UserControllers.ValidateToken)  
 
 
 
