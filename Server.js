@@ -5,6 +5,8 @@ const PORT =  8765
 const UserRoutes = require('./Routes/UserRoutes')
 const db = require('./DB/Db')
 
+require('dotenv').config()
+
 
 app.use(bodyParser.json())
 
