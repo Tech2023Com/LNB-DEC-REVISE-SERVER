@@ -1,8 +1,10 @@
 
 const path  = require('path')
 const UserSchema = require('../Schemas/UserSchema')
+const OtpSchema =  require('../Schemas/Otp')
 const bcrypt = require('bcrypt')
 const jwt =  require('jsonwebtoken')
+const sendMail =  require('../Mailer/mail')
 
 
 
@@ -307,6 +309,32 @@ exports.updateUserEmail = (req,res)=>{
 
     })
 
+}
+exports.verifyOtp = (req,res) =>{
+
+}
+
+exports.resetPasswordByOtp = (req,res)=>{
+
+    let otp = Math.floor(Math.random() * 4567)
+
+    UserSchema.find({email : req.body.email}).then((result)=>{
+        if(result.length == 0)
+        {
+            res.status(400).send({status : 400 , message : "User Not Found"})
+        }
+        else{
+            sendMail(result[0].email ,  otp)
+            OtpSchema.insertMany({id : result[0]._id , otp  : otp }).then((o_result)=>{
+                res.status(200).send({status : 200 ,  message : "OTP Send Successfully" })
+            }).catch((err)=>{
+                res.status(500).send({status :  500 , message : "Somenthing Went Wrong"})
+            })
+        }
+    }).catch((err)=>{
+        res.status(500).send({status :  500 , message : "Somenthing Went Wrong"})
+    })
+    
 }
 
 

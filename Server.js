@@ -4,6 +4,7 @@ const app = express()
 const PORT =  8765
 const UserRoutes = require('./Routes/UserRoutes')
 const db = require('./DB/Db')
+// const mailService = require('./Mailer/mail')
 
 
 
