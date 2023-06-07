@@ -6,6 +6,46 @@ const jwt =  require('jsonwebtoken')
 
 
 
+
+
+
+
+
+exports.uploadFile = (req,res)=>{
+console.log(req.body)
+
+    UserSchema.find({_id : req.body.id}).then((result)=>{
+        console.log(result)
+        if(result.length == 0)
+        {
+            res.status(400).send({status : 400 , message : "User Not Found"})
+        }else
+        {
+           UserSchema.updateOne({_id : req.body.id} , {$set : {profile_pic : `http://localhost:8765/static/${req.file_name}`}}).then((u_result)=>{
+            if(u_result.matchedCount == 1)
+                                    {
+                                        res.status(200).send({status : 200 ,  message : "Profile Updated Successfully"})
+                                    }
+                                    else
+                                    {
+                                        res.status(404).send({status : 404 ,  message : "Profile Not Updated"})
+                            
+                                    }
+                                }).catch((err)=>{
+                                    res.status(500).send({status : 500 , message : "Something Went Wrong"})
+                                })
+        
+        }
+    }).catch((err)=>{
+        console.log(err)
+        res.status(400).send({status : 400 , message : "Somthing Went Wrong"})
+    })
+    
+
+}
+
+
+
 exports.getForm  = (req,res) =>{
 
 UserSchema.find({}).then((result)=>{

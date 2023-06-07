@@ -25,6 +25,10 @@ const UserSchema =  new mongoose.Schema({
     token : {
         type: String,
         default  :""
+    },
+    profile_pic : {
+        type: String,
+        default : null
     }
 
 
