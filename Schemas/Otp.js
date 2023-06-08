@@ -12,6 +12,9 @@ const OtpSchema =  new mongoose.Schema({
         type : String,
         require :true,
         unique : true
+    },
+    time : {
+        type : Number
     }
 })
 

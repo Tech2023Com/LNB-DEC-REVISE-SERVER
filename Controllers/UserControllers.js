@@ -312,9 +312,111 @@ exports.updateUserEmail = (req,res)=>{
 }
 exports.verifyOtp = (req,res) =>{
 
+
+
+    UserSchema.find({email : req.body.email}).then((result1)=>{
+        if(result1.length  == 0)
+        {
+            res.status(400).send({status :  400 , message : "User Not Found"})
+        }
+        else
+        {
+            OtpSchema.find({id :  result1[0]._id}).then((result2)=>{
+                if(req.body.otp == result2[0].otp)
+                {
+
+                    var d = new Date();
+                    console.log("*****************************")
+                    console.log((d.getTime()  - result2[0].time) / 1000 )
+                    console.log((d.getTime()  - result2[0].time) / 1000 > 40)
+                    console.log("*****************************")
+                    
+                    if((d.getTime()  - result2[0].time) / 1000 > 40   ){
+
+                        res.status(400).send({status : 400 , messahe : "OTP has expired !! Please Generate a new OTP"})
+                        
+                    }
+                    else
+                    {
+                        bcrypt.genSalt(10, function(err,salt){
+                            if(err){
+                            res.status(500).send({status :  500 , message : "Somenthing Went Wrong"})
+
+                            }else
+                            {
+                                bcrypt.hash(req.body.newPassword ,  salt , function(err, hash){
+                                    if(err){
+                                        res.status(500).send({status :  500 , message : "Somenthing Went Wrong"})
+
+                                    }
+                                    else{
+                                        UserSchema.updateOne({_id :result1[0]._id  } , {$set : {password :  hash}}).then((up_result)=>{
+
+                                            if(up_result.matchedCount == 1)
+                                            {
+                                                OtpSchema.deleteOne({id: result1[0]._id}).then((dl_result)=>{
+                                                    if(dl_result.deletedCount == 1)
+                                                    {
+                                                        res.status(200).send({status : 200 , message : "Password Reset Successfully :)"})
+                                                    }
+                                                    else
+                                                    {
+                                                        res.status(500).send({status :  500 , message : "Somenthing Went Wrong"})
+
+                                                    }
+
+                                                }).catch((err)=>{
+                            res.status(500).send({status :  500 , message : "Somenthing Went Wrong"})
+
+                        })
+                                            }
+                                            else
+                                            {
+                                                
+                                                res.status(500).send({status :  500 , message : "Somenthing Went Wrong"})
+
+                                            }
+
+                                        }).catch((err)=>{
+                            res.status(500).send({status :  500 , message : "Somenthing Went Wrong"})
+
+                        })
+                                    }
+                                }) 
+                            }
+                        })
+
+                    }
+
+                        // OtpSchema.deleteOne({id :  result1[0]._id}).then((d_result)=>{
+                        //     if(d_result.deletedCount == 1)
+                        //     {
+
+                        //     }
+                        // }).catch((err)=>{
+                        //     res.status(500).send({status :  500 , message : "Somenthing Went Wrong"})
+
+                        // })
+                }
+                else
+                {
+                    res.status(400).send({status : 400 , message : "Inavlid OTP"})
+                }
+            }).catch((err)=>{
+                res.status(500).send({status :  500 , message : "Somenthing Went Wrong"})
+
+            })
+        }
+    }).catch((err)=>{
+        res.status(500).send({status :  500 , message : "Somenthing Went Wrong"})
+
+    })
+
+
 }
 
 exports.resetPasswordByOtp = (req,res)=>{
+    let d =  new Date();
 
     let otp = Math.floor(Math.random() * 4567)
 
@@ -325,7 +427,7 @@ exports.resetPasswordByOtp = (req,res)=>{
         }
         else{
             sendMail(result[0].email ,  otp)
-            OtpSchema.insertMany({id : result[0]._id , otp  : otp }).then((o_result)=>{
+            OtpSchema.insertMany({id : result[0]._id , otp  : otp  , time : d.getTime() }).then((o_result)=>{
                 res.status(200).send({status : 200 ,  message : "OTP Send Successfully" })
             }).catch((err)=>{
                 res.status(500).send({status :  500 , message : "Somenthing Went Wrong"})
